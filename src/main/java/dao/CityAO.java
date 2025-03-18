@@ -15,4 +15,11 @@ public class CityAO extends AbstractAO<City> {
         Query<Long> query = session.createQuery("select count(c) from City c", Long.class);
         return Math.toIntExact(query.uniqueResult());
     }
+
+    public City getById(Integer id) {
+        Session session = super.getCurrentSession();
+        Query<City> query = session.createQuery("select c from City c join fetch c.country where c.id = :ID", City.class);
+        query.setParameter("ID", id);
+        return query.getSingleResult();
+    }
 }
