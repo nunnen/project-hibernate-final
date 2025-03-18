@@ -17,7 +17,7 @@ public class CountryLanguage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "country_id")
     private Country country;
 

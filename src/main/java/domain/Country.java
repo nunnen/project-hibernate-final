@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -62,4 +63,8 @@ public class Country {
     @OneToOne
     @JoinColumn(name = "id")
     City city;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "country_id")
+    Set<CountryLanguage> languages;
 }
