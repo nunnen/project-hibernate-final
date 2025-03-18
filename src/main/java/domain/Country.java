@@ -27,7 +27,8 @@ public class Country {
     private String name;
 
     @Column(nullable = false)
-    private Integer continent;
+    @Enumerated(EnumType.ORDINAL)
+    private Continent continent;
 
     @Column(length = 26, nullable = false)
     private String region;
@@ -44,10 +45,10 @@ public class Country {
     @Column(name = "life_expectancy")
     private BigDecimal lifeExpectancy;
 
-    private BigDecimal gnp;
+    private BigDecimal GNP;
 
     @Column(name = "gnpo_id")
-    private BigDecimal gnpoId;
+    private BigDecimal GNPOId;
 
     @Column(name = "local_name", length = 45, nullable = false)
     private String localName;
