@@ -18,14 +18,14 @@ public class CountryLanguage {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "country_id")
     private Country country;
 
     @Column(nullable = false, length = 30)
     String language;
 
     @Column(name = "is_official", nullable = false)
-    Byte isOfficial;
+    Boolean isOfficial;
 
     @Column(nullable = false)
     BigDecimal percentage;
