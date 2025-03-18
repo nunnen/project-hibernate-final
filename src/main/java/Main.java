@@ -17,10 +17,7 @@ import org.hibernate.cfg.Environment;
 import redis.CityCountry;
 import redis.Language;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -48,6 +45,22 @@ public class Main {
         List<City> cities = main.fetchData();
         List<CityCountry> preparedData = main.transformData(cities);
         main.pushToRedis(preparedData);
+
+        main.sessionFactory.getCurrentSession().close();
+
+        List<Integer> ids = List.of(3, 2545, 123, 4, 189, 89, 3458, 1189, 10, 102);
+
+        long startRedis = System.currentTimeMillis();
+        main.testRedisData(ids);
+        long stopRedis = System.currentTimeMillis();
+
+        long startMysql = System.currentTimeMillis();
+        main.testMysqlData(ids);
+        long stopMysql = System.currentTimeMillis();
+
+        System.out.printf("%s:\t%d ms\n", "Redis", (stopRedis - startRedis));
+        System.out.printf("%s:\t%d ms\n", "MySQL", (stopMysql - startMysql));
+
         main.shutdown();
     }
 
@@ -60,7 +73,7 @@ public class Main {
             int size = cityAO.getTotalCount();
             List<City> cities = new ArrayList<>();
 
-            for (int i = 0; i < size; i+=step) {
+            for (int i = 0; i < size; i += step) {
                 cities.addAll(cityAO.getItems(i, step));
             }
 
@@ -107,8 +120,7 @@ public class Main {
             for (CityCountry cityCountry : data) {
                 try {
                     sync.set(String.valueOf(cityCountry.getId()), mapper.writeValueAsString(cityCountry));
-                }
-                catch (JsonProcessingException e) {
+                } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
             }
@@ -144,6 +156,31 @@ public class Main {
                 .addProperties(properties)
                 .buildSessionFactory();
         return sessionFactory;
+    }
+
+    private void testMysqlData(List<Integer> ids) {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            for (Integer id : ids) {
+                City city = cityAO.getById(id);
+                Set<CountryLanguage> languages = city.getCountry().getLanguages();
+            }
+            session.getTransaction().commit();
+        }
+    }
+
+    private void testRedisData(List<Integer> ids) {
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            RedisStringCommands<String, String> sync = connection.sync();
+            for (Integer id : ids) {
+                String value = sync.get(String.valueOf(id));
+                try {
+                    mapper.readValue(value, CityCountry.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
