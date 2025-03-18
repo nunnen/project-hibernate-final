@@ -47,6 +47,7 @@ public class Main {
         try (Session session = sessionFactory.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
 
+            List<Country> countries = countryAO.getAll();
             int step = 500;
             int size = cityAO.getTotalCount();
             List<City> cities = new ArrayList<>();
