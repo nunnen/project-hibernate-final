@@ -5,10 +5,14 @@ import domain.City;
 import domain.Country;
 import domain.CountryLanguage;
 import io.lettuce.core.RedisClient;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static java.util.Objects.nonNull;
@@ -33,6 +37,27 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        Main main = new Main();
+        List<City> cities = main.fetchData();
+
+        main.shutdown();
+    }
+
+    private List<City> fetchData() {
+        try (Session session = sessionFactory.getCurrentSession()) {
+            Transaction tx = session.beginTransaction();
+
+            int step = 500;
+            int size = cityAO.getTotalCount();
+            List<City> cities = new ArrayList<>();
+
+            for (int i = 0; i < size; i+=step) {
+                cities.addAll(cityAO.getItems(i, step));
+            }
+
+            tx.commit();
+            return cities;
+        }
     }
 
     private SessionFactory prepareRelationalDb() {
