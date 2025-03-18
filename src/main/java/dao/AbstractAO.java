@@ -27,7 +27,7 @@ public abstract class AbstractAO<T> {
         return query.list();
     }
 
-    public List<T> findAll() {
+    public List<T> getAll() {
         Query<T> query = sessionFactory.getCurrentSession().createQuery("from " + clazz.getName(), clazz);
         return query.list();
     }

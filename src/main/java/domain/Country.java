@@ -60,11 +60,11 @@ public class Country {
     @Column(name = "head_of_state", length = 60)
     private String headOfState;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
-    City city;
+    private City city;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "country_id")
-    Set<CountryLanguage> languages;
+    private Set<CountryLanguage> languages;
 }
