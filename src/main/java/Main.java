@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.CityAO;
 import dao.CountryAO;
@@ -5,6 +6,9 @@ import domain.City;
 import domain.Country;
 import domain.CountryLanguage;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisStringCommands;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -35,8 +39,7 @@ public class Main {
         cityAO = new CityAO(sessionFactory);
         countryAO = new CountryAO(sessionFactory);
 
-        //TODO: add redis
-        redisClient = null;
+        redisClient = prepareRedisClient();
         mapper = new ObjectMapper();
     }
 
@@ -44,6 +47,7 @@ public class Main {
         Main main = new Main();
         List<City> cities = main.fetchData();
         List<CityCountry> preparedData = main.transformData(cities);
+        main.pushToRedis(preparedData);
         main.shutdown();
     }
 
@@ -95,6 +99,30 @@ public class Main {
 
                     return res;
                 }).collect(Collectors.toList());
+    }
+
+    private void pushToRedis(List<CityCountry> data) {
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            RedisStringCommands<String, String> sync = connection.sync();
+            for (CityCountry cityCountry : data) {
+                try {
+                    sync.set(String.valueOf(cityCountry.getId()), mapper.writeValueAsString(cityCountry));
+                }
+                catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private RedisClient prepareRedisClient() {
+        RedisClient redisClient = RedisClient.create(RedisURI.create("localhost", 6379));
+        try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
+            System.out.println("\nConnected to Redis\n");
+        }
+
+        return redisClient;
+
     }
 
     private SessionFactory prepareRelationalDb() {
