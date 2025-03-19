@@ -1,0 +1,43 @@
+services:
+  app:
+    container_name: java-app
+    image: my-java-app
+    build:
+      context: .
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+      redis_db:
+        condition: service_healthy
+  mysql_db:
+    container_name: mysqlDB
+    image: mysql:8.0-debian
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: world
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./dump/dump-hibernate-final.sql:/docker-entrypoint-initdb.d/dump.sql
+  redis_db:
+    container_name: redisDB
+    image: redis:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: world
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql-data:
