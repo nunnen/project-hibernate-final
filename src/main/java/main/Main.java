@@ -1,3 +1,5 @@
+package main;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.CityAO;
@@ -64,7 +66,7 @@ public class Main {
         main.shutdown();
     }
 
-    private List<City> fetchData() {
+    public List<City> fetchData() {
         try (Session session = sessionFactory.getCurrentSession()) {
             Transaction tx = session.beginTransaction();
 
@@ -82,7 +84,7 @@ public class Main {
         }
     }
 
-    private List<CityCountry> transformData(List<City> cities) {
+    public List<CityCountry> transformData(List<City> cities) {
         return cities.stream()
                 .map(city -> {
                     CityCountry res = new CityCountry();
@@ -114,7 +116,7 @@ public class Main {
                 }).collect(Collectors.toList());
     }
 
-    private void pushToRedis(List<CityCountry> data) {
+    public void pushToRedis(List<CityCountry> data) {
         try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
             RedisStringCommands<String, String> sync = connection.sync();
             for (CityCountry cityCountry : data) {
@@ -137,7 +139,7 @@ public class Main {
 
     }
 
-    private SessionFactory prepareRelationalDb() {
+    public SessionFactory prepareRelationalDb() {
         final SessionFactory sessionFactory;
         Properties properties = new Properties();
         properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
@@ -158,7 +160,7 @@ public class Main {
         return sessionFactory;
     }
 
-    private void testMysqlData(List<Integer> ids) {
+    public void testMysqlData(List<Integer> ids) {
         try (Session session = sessionFactory.getCurrentSession()) {
             session.beginTransaction();
             for (Integer id : ids) {
@@ -169,7 +171,7 @@ public class Main {
         }
     }
 
-    private void testRedisData(List<Integer> ids) {
+    public void testRedisData(List<Integer> ids) {
         try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
             RedisStringCommands<String, String> sync = connection.sync();
             for (Integer id : ids) {
@@ -184,7 +186,7 @@ public class Main {
     }
 
 
-    private void shutdown() {
+    public void shutdown() {
         if (nonNull(sessionFactory)) {
             sessionFactory.close();
         }
