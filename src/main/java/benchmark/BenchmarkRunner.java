@@ -10,8 +10,8 @@ public class BenchmarkRunner {
         Options options = new OptionsBuilder()
                 .include(BenchmarkDB.class.getSimpleName())
                 .forks(1)
-                .warmupIterations(1)
-                .measurementIterations(3)
+                .warmupIterations(0)
+                .measurementIterations(1)
                 .result("benchmarkResult.json")
                 .resultFormat(ResultFormatType.JSON)
                 .build();

@@ -9,13 +9,18 @@
 #
 #EXPOSE 3306
 
-FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
-WORKDIR /app
-COPY src/ src
-COPY pom.xml ./
-RUN mvn package
+#FROM maven:3.9.6-eclipse-temurin-21 AS builder
+#WORKDIR /app
+#COPY src/ src
+#COPY pom.xml ./
+#RUN mvn clean package
+#
+#FROM eclipse-temurin:21-jdk
+#WORKDIR /app
+#COPY --from=builder /app/target/project-hibernate-final-1.0-SNAPSHOT.jar hibernate-final.jar
+#CMD ["java", "-jar", "hibernate-final.jar"]
 
-FROM eclipse-temurin:21-jre-ubi9-minimal
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY --from=builder /app/target/project-hibernate-final-1.0-SNAPSHOT.jar .
-CMD ["java", "-jar", "project-hibernate-final-1.0-SNAPSHOT.jar"]
+COPY target/project-hibernate-final-1.0-SNAPSHOT.jar app.jar
+CMD ["sh", "-c", "sleep 10 && java -jar app.jar"]
