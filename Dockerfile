@@ -11,5 +11,5 @@
 
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY target/project-hibernate-final-1.0-SNAPSHOT.jar app.jar
-CMD ["sh", "-c", "sleep 10 && java -jar app.jar"]
+COPY target/project-hibernate-final-1.0-SNAPSHOT.jar hibernate-final.jar
+CMD ["sh", "-c", "sleep 10 && java -jar hibernate-final.jar"]
