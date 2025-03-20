@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:8080"
   mysql_db:
-    container_name: mysqlDB
+    container_name: mysql-db
     image: mysql:8.0-debian
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -24,7 +24,7 @@ services:
       - mysql-data:/var/lib/mysql
       - ./dump/dump-hibernate-final.sql:/docker-entrypoint-initdb.d/dump.sql
   redis_db:
-    container_name: redisDB
+    container_name: redis-db
     image: redis:latest
     environment:
       MYSQL_ROOT_PASSWORD: root

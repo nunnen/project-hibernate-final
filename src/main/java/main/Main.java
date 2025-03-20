@@ -130,7 +130,7 @@ public class Main {
     }
 
     private RedisClient prepareRedisClient() {
-        RedisClient redisClient = RedisClient.create(RedisURI.create("localhost", 6379));
+        RedisClient redisClient = RedisClient.create(RedisURI.create("redis-db", 6379));
         try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
             System.out.println("\nConnected to Redis\n");
         }
