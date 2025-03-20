@@ -9,14 +9,16 @@ services:
         condition: service_healthy
       redis_db:
         condition: service_healthy
+    volumes:
+      - ./result:/result
   mysql_db:
-    container_name: mysqlDB
+    container_name: mysql-db
     image: mysql:8.0-debian
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: world
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 1s
       timeout: 3s
       retries: 5
@@ -26,7 +28,7 @@ services:
       - mysql-data:/var/lib/mysql
       - ./dump/dump-hibernate-final.sql:/docker-entrypoint-initdb.d/dump.sql
   redis_db:
-    container_name: redisDB
+    container_name: redis-db
     image: redis:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
