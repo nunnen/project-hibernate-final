@@ -7,4 +7,4 @@ RUN mvn package
 FROM eclipse-temurin:21-jre-ubi9-minimal
 WORKDIR /app
 COPY --from=builder /app/target/project-hibernate-final-1.0-SNAPSHOT-jar-with-dependencies.jar project-hibernate-final.jar
-CMD ["java", "-jar", "project-hibernate-final.jar"]
+CMD ["sh", "-c", "sleep 15 && java -jar project-hibernate-final.jar"]
