@@ -19,7 +19,7 @@ services:
       MYSQL_DATABASE: world
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 1s
+      interval: 5s
       timeout: 3s
       retries: 5
     ports:
