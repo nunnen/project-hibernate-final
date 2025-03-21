@@ -9,23 +9,17 @@ import java.io.File;
 
 public class BenchmarkRunner {
     public static void main(String[] args) throws Exception {
-        boolean result = new File("result").mkdirs();
+        new File("result").mkdirs();
 
-        if (result) {
+        Options options = new OptionsBuilder()
+                .include(BenchmarkDB.class.getSimpleName())
+                .forks(1)
+                .warmupIterations(1)
+                .measurementIterations(1)
+                .result("/result/benchmarkResult.json")
+                .resultFormat(ResultFormatType.JSON)
+                .build();
 
-            Options options = new OptionsBuilder()
-                    .include(BenchmarkDB.class.getSimpleName())
-                    .forks(1)
-                    .warmupIterations(1)
-                    .measurementIterations(1)
-                    .result("/result/benchmarkResult.json")
-                    .resultFormat(ResultFormatType.JSON)
-                    .build();
-
-            new Runner(options).run();
-        }
-        else {
-            System.out.println("Could not create result directory");
-        }
+        new Runner(options).run();
     }
 }
